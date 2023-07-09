@@ -24,6 +24,9 @@ jobs:
       run: npm install
     - name: npm run dev
       run: npm run dev
+      run: npm install --save-dev vite laravel-vite-plugin
+      run: npm install --save-dev @vitejs/plugin-vue
+      run: npm run build
     - name: Generate key
       run: php artisan key:generate
     - name: Directory Permissions
