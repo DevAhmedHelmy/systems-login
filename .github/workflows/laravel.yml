@@ -24,8 +24,11 @@ jobs:
       run: npm install
     - name: npm run dev
       run: npm run dev
+    - name: Vite
       run: npm install --save-dev vite laravel-vite-plugin
+    - name: Vue
       run: npm install --save-dev @vitejs/plugin-vue
+    - name: Build
       run: npm run build
     - name: Generate key
       run: php artisan key:generate
