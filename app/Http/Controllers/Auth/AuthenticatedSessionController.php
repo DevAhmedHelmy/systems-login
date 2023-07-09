@@ -33,9 +33,7 @@ class AuthenticatedSessionController extends Controller
             return back()->with('error', 'Invalid email or password');
         }
         $user->generateCode();
-
         return redirect()->route('2fa.index', $user->id);
-
         //  $request->authenticate();
         // $request->session()->regenerate();
         // return redirect()->intended(RouteServiceProvider::HOME);
