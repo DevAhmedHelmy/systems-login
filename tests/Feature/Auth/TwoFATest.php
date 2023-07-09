@@ -24,7 +24,7 @@ class TwoFATest extends TestCase
     public function test_2fa_screen_can_be_rendered()
     {
         $user = User::factory()->create();
-        $response = $this->get("/2fa/" . $user->id);
+        $response = $this->get("//2fa/" . $user->id);
         $response->assertStatus(200);
     }
 
