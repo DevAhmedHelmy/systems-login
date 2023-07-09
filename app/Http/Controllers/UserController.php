@@ -25,7 +25,7 @@ class UserController extends Controller
         $total_data  = $query->count();
         $limit = $request->input('length');
         $start = $request->input('start');
-        $order = $col_order[$request->input('order.0.column')?? 'id'];
+        $order = $col_order[$request->input('order.0.column')?? 0];
         $dir = $request->input('order.0.dir') ?? 'desc';
         $total_filtered = 0;
         if (!empty($request->input('search.value'))) {

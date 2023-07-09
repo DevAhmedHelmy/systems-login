@@ -12,7 +12,7 @@ class ClientTest extends TestCase
     use RefreshDatabase;
 
     private $admin;
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->admin = User::factory()->create(['is_active' => true, 'email' => 'admin@health-links.me', 'role' => 'admin']);
@@ -28,17 +28,15 @@ class ClientTest extends TestCase
     public function test_client_list_by_auth()
     {
         $user = User::factory()->create(['is_active' => true, 'email' => 'user@health-links.me']);
-        $clients = Client::factory(5)->create()->pluck('id')->toArray();
-        $user->clients()->attach($clients);
+        $clients = Client::factory(5)->create(['is_active' => true])->pluck('id')->toArray();
+        $user->clients()->sync($clients);
         $response = $this->actingAs($user)->get('/clients/data');
-
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'draw',
             'recordsTotal',
             'recordsFiltered',
             'data',
-
         ]);
     }
     public function test_admin_can_access_create_client_page()
