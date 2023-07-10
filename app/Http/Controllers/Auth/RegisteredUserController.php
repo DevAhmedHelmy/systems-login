@@ -47,7 +47,7 @@ class RegisteredUserController extends Controller
             $user->clients()->attach($request->clients);
         }
 
-        // event(new Registered($user));
+        event(new Registered($user));
         // Auth::login($user);
         return redirect('/login');
     }
