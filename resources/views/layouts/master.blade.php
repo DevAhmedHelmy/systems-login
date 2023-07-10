@@ -8,32 +8,26 @@
     @include('layouts._styles')
 
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('admin') }}/app-assets/vendors/css/forms/select/select2.min.css">
-    <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/vendors/css/tables/datatable/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/vendors/css/tables/datatable/responsive.bootstrap5.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
-
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-sweet-alerts.min.css">
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/bootstrap.css">
+    {{--  <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/bootstrap-extended.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/colors.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/components.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/dark-layout.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/semi-dark-layout.css">  --}}
 
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('admin') }}/app-assets/css/core/menu/menu-types/horizontal-menu.css">
-    <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/custom.css">
     <!-- END: Custom CSS-->
 
     <script src="{{ asset('admin') }}/app-assets/vendors/js/vendors.min.js"></script>
@@ -86,8 +80,7 @@
                                 onclick="event.preventDefault();document.getElementById('logout-form').submit();"> <i
                                     class="me-50" data-feather="power"></i> Logout </a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                style="display: none;">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 {{ csrf_field() }}
                             </form>
 
@@ -105,86 +98,7 @@
 
 
     <!-- BEGIN: Main Menu-->
-    <div class="horizontal-menu-wrapper">
-        <div class="header-navbar navbar-expand-sm navbar navbar-horizontal floating-nav navbar-dark navbar-shadow menu-border container-xxl"
-            role="navigation" data-menu="menu-wrapper" data-menu-type="floating-nav">
-            <div class="navbar-header">
-                <ul class="nav navbar-nav flex-row">
-                    <li class="nav-item me-auto"><a class="navbar-brand"
-                            href="{{ asset('admin') }}/html/ltr/horizontal-menu-template-dark/index.html"><span
-                                class="brand-logo">
-                            </span>
-                            <h2 class="brand-text mb-0">Vuexy</h2>
-                        </a></li>
-                    <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pe-0"
-                            data-bs-toggle="collapse"><i
-                                class="d-block d-xl-none text-primary toggle-icon font-medium-4"
-                                data-feather="x"></i></a></li>
-                </ul>
-            </div>
-            <div class="shadow-bottom"></div>
-            <!-- Horizontal menu content-->
-            <div class="navbar-container main-menu-content" data-menu="menu-container">
-
-                <ul class="nav navbar-nav" id="main-menu-navigation" data-menu="menu-navigation">
-                    @if (auth()->user()->role == 'admin')
-                        <li class="dropdown nav-item" data-menu="dropdown"><a
-                                class="dropdown-toggle nav-link d-flex align-items-center" href="#"
-                                data-bs-toggle="dropdown">
-                                <span data-i18n="Apps"><i data-feather="home"></i> Clients</span></a>
-                            <ul class="dropdown-menu" data-bs-popper="none">
-                                <li @class([
-                                    'active' =>
-                                        request()->routeIs('clients.index') ||
-                                        request()->routeIs('clients.show') ||
-                                        request()->routeIs('clients.edit'),
-                                ]) data-menu=""><a
-                                        class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('clients.index') }}" data-bs-toggle="" data-i18n="Email"><svg
-                                            xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="feather feather-mail">
-                                            <path
-                                                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                            </path>
-                                            <polyline points="22,6 12,13 2,6"></polyline>
-                                        </svg><span data-i18n="Email">Clients List</span></a>
-                                </li>
-                                <li @class(['active' => request()->routeIs('clients.create')]) data-menu=""><a
-                                        class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('clients.create') }}" data-bs-toggle="" data-i18n="Chat"><svg
-                                            xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="feather feather-message-square">
-                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
-                                            </path>
-                                        </svg><span data-i18n="Chat">Add New</span></a>
-                                </li>
-
-                            </ul>
-                        </li>
-                        <li @class([
-                            'dropdown',
-                            'nav-item',
-                            'active' => request()->routeIs('users.index'),
-                        ])>
-                            <a class="nav-link d-flex align-items-center" href="/users"><i
-                                    data-feather="users"></i><span data-i18n="Users">Users</span></a>
-                        </li>
-                    @else
-                        <li class="dropdown nav-item active">
-                            <a class=" nav-link d-flex align-items-center" href="/"><i
-                                    data-feather="home"></i><span data-i18n="Dashboards">Clients</span></a>
-
-                        </li>
-                    @endif
-
-                </ul>
-            </div>
-        </div>
-    </div>
+        @include('layouts._menu')
     <!-- END: Main Menu-->
 
     <!-- BEGIN: Content-->
@@ -229,6 +143,7 @@
 
     <!-- BEGIN: Page Vendor JS-->
     <script src="{{ asset('admin') }}/app-assets/vendors/js/ui/jquery.sticky.js"></script>
+    <script src="{{ asset('admin') }}/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->

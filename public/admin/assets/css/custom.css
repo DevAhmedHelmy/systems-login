@@ -5,3 +5,7 @@
 #navbar .brand-logo img {
     max-width: 150px !important;
 }
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: #ea5455 !important;
+}
