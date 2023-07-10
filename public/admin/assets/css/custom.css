@@ -2,7 +2,6 @@
     max-width: 700px !important;
 }
 
-
-.horizontal-menu .header-navbar.navbar-brand-center .navbar-header .navbar-brand .brand-logo img{
+#navbar .brand-logo img {
     max-width: 150px !important;
 }

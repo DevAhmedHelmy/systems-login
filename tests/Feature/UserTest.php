@@ -38,4 +38,16 @@ class UserTest extends TestCase
 
         ]);
     }
+
+    public function test_admin_can_toggle_active_user()
+    {
+        $user = User::factory()->create(['is_active' => true, 'email' => 'admin@health-links.me', 'role' => 'admin']);
+        $user2 = User::factory()->create(['is_active' => false, 'email' => 'test@health-links.me', 'role' => 'user']);
+        $response = $this->actingAs($user)->post('/users/' . $user2->id . '/toggle_active');
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'id' => $user2->id,
+            'is_active' => true
+        ]);
+    }
 }

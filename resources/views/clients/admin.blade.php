@@ -1,50 +1,35 @@
-@extends('layouts.master')
-@section('breadcrumbs')
-    <h2 class="content-header-title float-start mb-0">Users</h2>
-    <div class="breadcrumb-wrapper">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item active">Users List
-            </li>
-        </ol>
-    </div>
-@endsection
-@section('content')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+<div class="card">
+    <div class="card-header border-bottom d-flex justify-content-between align-items-center">
 
-                    <div>
-                        <h6>Users List</h6>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-datatable">
-                        <table class="datatables-basic2 table" id="users">
-                            <thead>
-                                <tr>
-                                    <th>name</th>
-                                    <th>email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div>
+            <h6>clients List</h6>
         </div>
     </div>
-@endsection
+    <div class="card-body">
+        <div class="card-datatable">
+            <table class="datatables-basic2 table" id="clients">
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>Domain</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#users').DataTable({
+            $('#clients').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('users.data') }}",
+                    url: "{{ route('clients.data') }}",
                     dataType: 'json',
                     type: 'GET'
                 },
@@ -52,11 +37,9 @@
                         data: 'name'
                     },
                     {
-                        data: 'email'
+                        data: 'domain'
                     },
-                    {
-                        data: 'role'
-                    },
+
                     {
                         data: ''
                     },
@@ -72,7 +55,7 @@
                                 span +=
                                     "<a  href='javascript:void(0)' class='ml-2' id='active-" +
                                     row.id +
-                                    "'onClick='updateUserActive(" + row.id +
+                                    "'onClick='updateClientActive(" + row.id +
                                     ")'>" +
 
                                     '<span class="badge badge-light-success rounded-pill ms-auto me-1 active-agent">Active</span></a>' +
@@ -83,7 +66,7 @@
                                 span +=
                                     "<a  href='javascript:void(0)' class='ml-2' id='active-" +
                                     row.id +
-                                    "'onClick='updateUserActive(" + row.id +
+                                    "'onClick='updateClientActive(" + row.id +
                                     ")'>" +
 
                                     '<span class="badge badge-light-danger rounded-pill ms-auto me-1 active-agent">Unactive</span></a>' +
@@ -102,19 +85,19 @@
                         title: 'Actions',
                         orderable: false,
                         render: (data, type, row, meta) => {
-                            let viewIcon = '<a class="icon-view" href="/users/' + row
+
+                            let viewIcon = '<a class="icon-view" href="/clients/' + row
                                 .id + '"' + '>' +
                                 feather.icons['eye'].toSvg({
                                     class: 'font-small-4'
                                 }) +
                                 '</a>';
-                            var editIcon = '<a class="icon-view" href="/users/' + row.id +
+                            var editIcon = '<a class="icon-view" href="/clients/' + row.id +
                                 '/edit"' + '>' +
                                 feather.icons['edit'].toSvg({
                                     class: 'font-small-4'
                                 }) +
                                 '</a>';
-
                             var deleteIcon = '<a class="delete-user" data-id="' + row.id + '"' +
                                 '>' + feather.icons['trash-2'].toSvg({
                                     class: 'font-small-4'
@@ -135,14 +118,15 @@
             });
         });
     </script>
+
     <script>
-        function updateUserActive(id) {
+        function updateClientActive(id) {
             $("#active-" + id).addClass("d-none");
             $("#activeSpinner-" + id).removeClass("d-none");
-            const user = '/users/' + id + '/toggle_active'
+            const client = '/clients/' + id + '/toggle_active'
             Swal.fire({
                 title: "Are you sure?",
-                text: `You will update user status!`,
+                text: `You will update client status!`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes!",
@@ -151,7 +135,7 @@
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: user,
+                        url: client,
                         type: 'POST',
                         DataType: 'json',
                         data: {
@@ -160,7 +144,7 @@
                         success: function(response) {
                             Swal.fire({
                                 title: 'Updated!',
-                                text: 'user has been Updated.',
+                                text: 'client has been Updated.',
                                 type: 'success',
                                 timer: 2000,
                             }).then((result) => {
@@ -168,10 +152,11 @@
 
                                     var span = '';
                                     if (response.is_active == 0) {
+
                                         span +=
                                             "<a  href='javascript:void(0)' class='ml-2' id='active-" +
                                             id +
-                                            "'onClick='updateUserActive(" + id +
+                                            "'onClick='updateClientActive(" + id +
                                             ")'>" +
 
                                             '<span class="badge badge-light-success rounded-pill ms-auto me-1 active-agent">Active</span></a>' +
@@ -182,7 +167,7 @@
                                         span +=
                                             "<a  href='javascript:void(0)' class='ml-2' id='active-" +
                                             id +
-                                            "'onClick='updateUserActive(" + id +
+                                            "'onClick='updateClientActive(" + id +
                                             ")'>" +
 
                                             '<span class="badge badge-light-danger rounded-pill ms-auto me-1 active-agent">Unactive</span></a>' +
@@ -192,7 +177,7 @@
 
                                     }
                                     $(`#active-${id}`).closest('td').closest('tr').find(
-                                        'td:eq(3)').html(span)
+                                        'td:eq(2)').html(span)
                                     $("#activeSpinner-" + id).addClass("d-none");
                                     $("#active-" + id).removeClass("d-none");
                                 }

@@ -3,26 +3,21 @@
 <!-- BEGIN: Head-->
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
 
     <title>Health Links</title>
-    <link rel="apple-touch-icon" href="{{ asset('admin') }}/app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin') }}/app-assets/images/diamond.jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
-        rel="stylesheet">
+    @include('layouts._styles')
 
-    <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/vendors/css/forms/select/select2.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/vendors/css/tables/datatable/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/vendors/css/tables/datatable/responsive.bootstrap5.min.css">
-    <!-- END: Vendor CSS-->
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
 
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-sweet-alerts.min.css">
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/bootstrap-extended.css">
@@ -43,6 +38,7 @@
 
     <script src="{{ asset('admin') }}/app-assets/vendors/js/vendors.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+    <script src="{{ asset('admin') }}/app-assets/vendors/js/extensions/sweetalert2.all.min.js"></script>
 </head>
 <!-- END: Head-->
 
@@ -55,11 +51,12 @@
     <nav class="header-navbar navbar-expand-lg navbar navbar-fixed align-items-center navbar-shadow navbar-brand-center"
         data-nav="brand-center">
         <div class="navbar-header d-xl-block d-none">
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav" id='navbar'>
                 <li class="nav-item"><a class="navbar-brand"
                         href="{{ asset('admin') }}/html/ltr/horizontal-menu-template-dark/index.html">
                         <span class="brand-logo">
-                            <img src="{{ asset('admin') }}/app-assets/images/logo3.png" alt="Health Links">
+                            <img src="{{ asset('admin') }}/app-assets/images/logo3.png" alt="Health Links"
+                                style="max-width: 150px">
                         </span>
                     </a></li>
             </ul>
@@ -72,50 +69,34 @@
                             data-feather="sun"></i></a></li>  --}}
 
 
-                    @auth
-                        <li class="nav-item dropdown dropdown-user"><a class="nav-link dropdown-toggle dropdown-user-link"
-                                id="dropdown-user" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <div class="user-nav d-sm-flex d-none"><span
-                                        class="user-name fw-bolder">{{ auth()->user()->name }}</span><span
-                                        class="user-status"></span></div><span class="avatar"><img class="round"
-                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgOum8r1wH4vte2O8g9f3RVuFY4h750UDELvzHXPM_67S228-eiTy54Qo4MASiW--w2qg&usqp=CAU"
-                                        alt="avatar" height="40" width="40"><span
-                                        class="avatar-status-online"></span></span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
-                                {{-- <a class="dropdown-item" href="{{ route('users.edit', auth()->user()->id) }}"><i class="me-50"
-                                    data-feather="user"></i> Profile</a> --}}
+                @auth
+                    <li class="nav-item dropdown dropdown-user"><a class="nav-link dropdown-toggle dropdown-user-link"
+                            id="dropdown-user" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            <div class="user-nav d-sm-flex d-none"><span
+                                    class="user-name fw-bolder">{{ auth()->user()->name }}</span><span
+                                    class="user-status"></span></div><span class="avatar"><img class="round"
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgOum8r1wH4vte2O8g9f3RVuFY4h750UDELvzHXPM_67S228-eiTy54Qo4MASiW--w2qg&usqp=CAU"
+                                    alt="avatar" height="40" width="40"><span
+                                    class="avatar-status-online"></span></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
 
-                                <a class="log-out-btn dropdown-item" href="#"
-                                    onclick="event.preventDefault();document.getElementById('logout-form').submit();"> <i
-                                        class="me-50" data-feather="power"></i> Logout </a>
+                            <a class="log-out-btn dropdown-item" href="#"
+                                onclick="event.preventDefault();document.getElementById('logout-form').submit();"> <i
+                                    class="me-50" data-feather="power"></i> Logout </a>
 
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    {{ csrf_field() }}
-                                </form>
-
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
 
 
-                            </div>
-                        </li>
-                    @endauth
-                {{--  <li class="nav-item dropdown dropdown-user"><a class="nav-link dropdown-toggle dropdown-user-link"
-                        id="dropdown-user" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <div class="user-nav d-sm-flex d-none"><span class="user-name fw-bolder">John Doe</span><span
-                                class="user-status">Admin</span></div><span class="avatar"><img class="round"
-                                src="{{ asset('admin') }}/app-assets//images/portrait/small/avatar-s-11.jpg"
-                                alt="avatar" height="40" width="40"><span
-                                class="avatar-status-online"></span></span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user"><a
-                            class="dropdown-item" href="page-profile.html"><i class="me-50" data-feather="user"></i>
-                            Profile</a>
-                        <a class="dropdown-item" href="auth-login-cover.html"><i class="me-50"
-                                data-feather="power"></i> Logout</a>
-                    </div>
-                </li>  --}}
+
+                        </div>
+                    </li>
+                @endauth
+
             </ul>
         </div>
     </nav>
@@ -224,6 +205,7 @@
             </div>
             <div class="content-body">
                 @yield('content')
+                @include('layouts._message')
             </div>
         </div>
     </div>

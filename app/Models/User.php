@@ -51,6 +51,11 @@ class User extends Authenticatable
     ];
 
 
+    public function scopeIsActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     public function clients(): BelongsToMany
     {
         return $this->belongsToMany(Client::class, 'user_client', 'user_id', 'client_id');

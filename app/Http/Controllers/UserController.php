@@ -18,6 +18,15 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
+    public function toggleActive(User $user)
+    {
+        if ($user->id == auth()->user()->id)
+            return response()->json(['message' => 'you cannot toggle your own account'], 403);
+        $user->update(['is_active' => !$user->is_active]);
+        $user->fresh();
+        return response()->json(['message' => 'successfully', 'is_active' => $user->is_active]);
+    }
+
     public function getUsers(Request $request)
     {
         $col_order = ['id', 'name', 'email'];
@@ -25,12 +34,15 @@ class UserController extends Controller
         $total_data  = $query->count();
         $limit = $request->input('length');
         $start = $request->input('start');
-        $order = $col_order[$request->input('order.0.column')?? 0];
+        $order = $col_order[$request->input('order.0.column') ?? 0];
         $dir = $request->input('order.0.dir') ?? 'desc';
         $total_filtered = 0;
         if (!empty($request->input('search.value'))) {
             $search = $request->input('search.value');
-            $query->where('name', 'LIKE', '%' . $search . '%');
+            $query->where('name', 'LIKE', '%' . $search . '%')
+                ->orWhere('email', 'LIKE', '%' . $search . '%')
+                ->orWhere('phone', 'LIKE', '%' . $search . '%')
+                ->orWhere('username', 'LIKE', '%' . $search . '%');
             $total_filtered = $query->count();
         }
         $start = ($request->start) ? $request->start : 0;

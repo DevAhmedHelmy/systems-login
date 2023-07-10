@@ -132,13 +132,12 @@ class ClientTest extends TestCase
 
     public function test_toggle_active()
     {
-
-        $client = Client::factory()->create();
+        $client = Client::factory()->create(['is_active' => false]);
         $response = $this->actingAs($this->admin)->post('/clients/' . $client->id . '/toggle_active');
-        $response->assertStatus(302)
-            ->assertSessionHasNoErrors();
+        $response->assertStatus(200);
         $this->assertDatabaseHas('clients', [
-            'is_active' => false,
+            'id' => $client->id,
+            'is_active' => true,
         ]);
     }
     // public function test_client_delete()
