@@ -18,13 +18,16 @@ use App\Http\Controllers\TwoFAController;
 */
 
 require __DIR__ . '/auth.php';
-
+Route::get('/', function () {
+    return redirect('/login');
+});
 Route::view('403', 'errors.403')->name('errors.403');
 
 Route::middleware(['auth', 'ManageRedirect'])->group(function () {
     Route::get('/clients',[ClientController::class,'index'])->name('clients.index');
     Route::get('clients/data',[ClientController::class,'getClients'])->name('clients.data');
     Route::middleware(['is_admin'])->group(function () {
+        Route::post('users/{user}/toggle_active', [UserController::class, 'toggleActive'])->name('clients.toggleActive');
         Route::get('users/data',[UserController::class,'getUsers'])->name('users.data');
         Route::get('/users',[UserController::class,'index'])->name('users.index');
         Route::get('/users/{user}',[UserController::class,'show'])->name('users.show');

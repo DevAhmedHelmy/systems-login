@@ -17,7 +17,7 @@ class ClientController extends Controller
 
     public function create()
     {
-        $users = User::where('is_active', true)->get();
+        $users = User::isActive()->get();
         return view('clients.create', compact('users'));
     }
 
@@ -41,7 +41,7 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        $users = User::with('clients')->where('is_active', true)->get();
+        $users = User::with('clients')->isActive()->get();
         return view('clients.edit', compact('client', 'users'));
     }
 
@@ -59,7 +59,8 @@ class ClientController extends Controller
     public function toggleActive(Client $client)
     {
         $client->update(['is_active' => !$client->is_active]);
-        return redirect()->route('clients.index');
+        $client->fresh();
+        return response()->json(['message' => 'successfully', 'is_active' => $client->is_active]);
     }
 
     public function getClients(Request $request)
@@ -69,7 +70,7 @@ class ClientController extends Controller
         $total_data  = $query->count();
         $limit = $request->input('length');
         $start = $request->input('start');
-        $order = $col_order[$request->input('order.0.column') ?? 'id'];
+        $order = $col_order[$request->input('order.0.column') ?? 0];
         $dir = $request->input('order.0.dir') ?? 'desc';
         $total_filtered = 0;
         if (!empty($request->input('search.value'))) {
@@ -100,7 +101,7 @@ class ClientController extends Controller
             $nest['id'] = $item->id;
             $nest['name'] = $item->name;
             $nest['domain'] = $item->domain;
-            $nest['status'] = $item->is_active;
+            $nest['is_active'] = $item->is_active;
             $rows[] = $nest;
         }
         return $rows;

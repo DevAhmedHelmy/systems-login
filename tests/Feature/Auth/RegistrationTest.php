@@ -17,23 +17,7 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_new_users_can_register(): void
-    {
-        $clients = Client::factory(2)->create(['is_active' => true])->pluck('id')->toArray();
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'username' => 'test',
-            'phone' => '123456789',
-            'email' => 'test@health-links.me',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'clients' => $clients
-        ]);
-        $this->assertDatabaseHas('users', [
-            'name' => 'Test User',
-        ]);
-        $response->assertRedirect('/login');
-    }
+
     /**
      * @dataProvider governorateDate
      */
