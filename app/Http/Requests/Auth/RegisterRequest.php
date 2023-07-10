@@ -28,8 +28,8 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:' . User::class,],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class, new IsHealthLinksEmail],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email', new IsHealthLinksEmail],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['required', 'string', 'max:255'],
             'clients' => ['required', 'array'],
