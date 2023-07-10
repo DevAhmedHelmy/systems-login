@@ -30,8 +30,6 @@ jobs:
       run: npm install
     - name: run dev
       run: npm run dev
-    - name: Vite
-      run: npm install --save-dev vite laravel-vite-plugin
     - name: build
       run: npm run build
     - name: Create Database
