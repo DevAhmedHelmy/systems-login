@@ -93,7 +93,7 @@ class User extends Authenticatable
     {
         try {
             $details = [
-                'title' => 'Mail from laravelia.com',
+                'title' => 'Verification Code',
                 'code' => $code
             ];
 

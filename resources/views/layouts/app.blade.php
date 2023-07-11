@@ -71,6 +71,7 @@
             }
         })
     </script>
+    @stack('js')
 </body>
 <!-- END: Body-->
 

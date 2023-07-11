@@ -6,17 +6,19 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\VerificationCode;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+
 
 class TwoFAController extends Controller
 {
     /**
      * Write code on Method
      *
-     * @return response()
+     * @return View
      */
-    public function index(Request $request, $id)
+    public function index(Request $request, $id): View
     {
         $title = 'Two Factor Page';
         $user = User::where('id', $id)->first();
@@ -26,9 +28,9 @@ class TwoFAController extends Controller
     /**
      * Write code on Method
      *
-     * @return response()
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'code' => 'required',
@@ -50,9 +52,9 @@ class TwoFAController extends Controller
     /**
      * Write code on Method
      *
-     * @return response()
+     * @return RedirectResponse
      */
-    public function resend($user_id)
+    public function resend($user_id): RedirectResponse
     {
         $user = User::where('id', $user_id)->first();
         $user->generateCode();
