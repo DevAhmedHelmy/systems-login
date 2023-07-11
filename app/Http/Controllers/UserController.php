@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
@@ -13,12 +14,12 @@ class UserController extends Controller
         return view('users.index');
     }
 
-    public function show(User $user)
+    public function show(User $user): View
     {
         return view('users.show', compact('user'));
     }
 
-    public function toggleActive(User $user)
+    public function toggleActive(User $user): JsonResponse
     {
         if ($user->id == auth()->user()->id)
             return response()->json(['message' => 'you cannot toggle your own account'], 403);
@@ -27,7 +28,7 @@ class UserController extends Controller
         return response()->json(['message' => 'successfully', 'is_active' => $user->is_active]);
     }
 
-    public function getUsers(Request $request)
+    public function getUsers(Request $request): String
     {
         $col_order = ['id', 'name', 'email'];
         $query = User::query();
@@ -62,7 +63,7 @@ class UserController extends Controller
     }
 
 
-    public function drawTable($data)
+    public function drawTable($data): array
     {
         $rows = array();
         foreach ($data as $item) {

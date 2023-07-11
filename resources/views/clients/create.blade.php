@@ -28,9 +28,7 @@
                                             placeholder="Client Name" value="{{ old('name') }}" required>
                                     </div>
                                     @error('name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                        <span class="error">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="col-12">

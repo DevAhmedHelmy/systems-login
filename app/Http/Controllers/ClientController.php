@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientRequest;
-use App\Models\Client;
-use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Models\{Client, User};
+use App\Http\Requests\ClientRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class ClientController extends Controller
 {
@@ -15,13 +16,13 @@ class ClientController extends Controller
         return view('clients.index');
     }
 
-    public function create()
+    public function create(): View
     {
         $users = User::isActive()->get();
         return view('clients.create', compact('users'));
     }
 
-    public function store(ClientRequest $request)
+    public function store(ClientRequest $request): RedirectResponse
     {
         $client = Client::create([
             'name' => $request->name,
@@ -29,23 +30,23 @@ class ClientController extends Controller
             'api_key' => $request->api_key,
         ]);
         if (!empty($request->users)) $client->users()->sync($request->users);
-        return redirect()->route('clients.index');
+        return redirect()->route('clients.index')->with('success', 'Client Created Successfully');
     }
 
 
-    public function show(Client $client)
+    public function show(Client $client): View
     {
         $client->load('users');
         return view('clients.show', compact('client'));
     }
 
-    public function edit(Client $client)
+    public function edit(Client $client): View
     {
         $users = User::with('clients')->isActive()->get();
         return view('clients.edit', compact('client', 'users'));
     }
 
-    public function update(ClientRequest $request, Client $client)
+    public function update(ClientRequest $request, Client $client): RedirectResponse
     {
         $client->update([
             'name' => $request->name,
@@ -53,17 +54,17 @@ class ClientController extends Controller
             'api_key' => $request->api_key,
         ]);
         if (!empty($request->users)) $client->users()->sync($request->users);
-        return redirect()->route('clients.index');
+        return redirect()->route('clients.index')->with('success', 'Client Updated Successfully');
     }
 
-    public function toggleActive(Client $client)
+    public function toggleActive(Client $client): JsonResponse
     {
         $client->update(['is_active' => !$client->is_active]);
         $client->fresh();
         return response()->json(['message' => 'successfully', 'is_active' => $client->is_active]);
     }
 
-    public function getClients(Request $request)
+    public function getClients(Request $request): String
     {
         $col_order = ['id', 'name', 'domain'];
         $query = auth()->user()->clients()->getQuery();
@@ -94,7 +95,7 @@ class ClientController extends Controller
         return json_encode($json);
     }
 
-    public function drawTable($data)
+    public function drawTable($data): array
     {
         $rows = array();
         foreach ($data as $item) {

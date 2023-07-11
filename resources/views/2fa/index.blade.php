@@ -54,13 +54,13 @@
                             @enderror
                         </div>
 
-
+                        <p id="resend_counter" class="mb-0.5"></p>
 
                         <button class="btn btn-primary w-100" type="submit" tabindex="4">Verify Code</button>
 
                     </form>
 
-                    <p class="text-center mt-2">
+                    <p id="resend_link" class="text-center mt-2 d-none">
                         <span>New on our platform?</span>
                         <a href="{{ route('2fa.resend', $user->id) }}">
                             <span>Resend Code</span>
@@ -72,3 +72,34 @@
         </div>
     </div>
 @endsection
+@push('js')
+    <script>
+        $(document).ready(function() {
+
+            // JavaScript
+            var counterElement = document.getElementById("resend_counter");
+
+            function startCounter(duration) {
+                var timer = duration;
+                var minutes, seconds;
+
+                // Update counter every second
+                var countdown = setInterval(function() {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    counterElement.textContent = "Code will be Invaild In" + minutes + ":" + seconds;
+                    if (--timer < 0) {
+                        clearInterval(countdown);
+                        counterElement.textContent = "Code Is Invaild";
+                        $('#resend_link').removeClass('d-none');
+                    }
+                }, 1000);
+            }
+
+            // Start the counter for 5 minutes (300 seconds)
+            startCounter(300);
+        })
+    </script>
+@endpush
