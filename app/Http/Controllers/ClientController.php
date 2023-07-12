@@ -13,7 +13,12 @@ class ClientController extends Controller
 {
     public function index(): View
     {
-        return view('clients.index');
+        if(auth()->user()->role=='admin'){
+
+            return view('clients.index');
+        }
+        $clients = auth()->user()->clients;
+        return view('clients.index', compact('clients'));
     }
 
     public function create(): View
@@ -99,8 +104,9 @@ class ClientController extends Controller
     {
         $rows = array();
         foreach ($data as $item) {
+            $link = "<a href='#'>{$item->name}</a>";
             $nest['id'] = $item->id;
-            $nest['name'] = $item->name;
+            $nest['name'] = $link;
             $nest['domain'] = $item->domain;
             $nest['is_active'] = $item->is_active;
             $rows[] = $nest;

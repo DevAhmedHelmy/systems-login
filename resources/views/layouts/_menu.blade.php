@@ -44,14 +44,32 @@
 
                            </ul>
                        </li>
-                       <li @class([
-                           'dropdown',
-                           'nav-item',
-                           'active' => request()->routeIs('users.index'),
-                       ])>
-                           <a class="nav-link d-flex align-items-center" href="/users"><i
-                                   data-feather="users"></i><span data-i18n="Users">Users</span></a>
+                        <li class="dropdown nav-item" data-menu="dropdown"><a
+                               class="dropdown-toggle nav-link d-flex align-items-center" href="#"
+                               data-bs-toggle="dropdown">
+                               <span data-i18n="Apps"><i data-feather="users"></i> users</span></a>
+                           <ul class="dropdown-menu" data-bs-popper="none">
+                               <li @class([
+                                   'active' =>
+                                       request()->routeIs('users.index') ||
+                                       request()->routeIs('users.show') ||
+                                       request()->routeIs('users.edit'),
+                               ]) data-menu=""><a
+                                       class="dropdown-item d-flex align-items-center"
+                                       href="{{ route('users.index') }}" data-bs-toggle="" data-i18n="Email"> <i
+                                           data-feather="message-square"></i><span data-i18n="Email">users
+                                           List</span></a>
+                               </li>
+                               <li @class(['active' => request()->routeIs('users.create')]) data-menu=""><a
+                                       class="dropdown-item d-flex align-items-center"
+                                       href="{{ route('users.create') }}" data-bs-toggle="" data-i18n="Chat">
+                                       <i data-feather="message-square"></i>
+                                       <span data-i18n="Chat">Add New</span></a>
+                               </li>
+
+                           </ul>
                        </li>
+
                    @else
                        <li class="dropdown nav-item active">
                            <a class=" nav-link d-flex align-items-center" href="/"><i

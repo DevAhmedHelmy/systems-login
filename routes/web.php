@@ -29,8 +29,9 @@ Route::middleware(['auth', 'ManageRedirect'])->group(function () {
     Route::middleware(['is_admin'])->group(function () {
         Route::post('users/{user}/toggle_active', [UserController::class, 'toggleActive'])->name('clients.toggleActive');
         Route::get('users/data',[UserController::class,'getUsers'])->name('users.data');
-        Route::get('/users',[UserController::class,'index'])->name('users.index');
-        Route::get('/users/{user}',[UserController::class,'show'])->name('users.show');
+        Route::resource('users', UserController::class);
+        // Route::get('/users',[UserController::class,'index'])->name('users.index');
+        // Route::get('/users/{user}',[UserController::class,'show'])->name('users.show');
         Route::post('clients/{client}/toggle_active', [ClientController::class, 'toggleActive'])->name('clients.toggleActive');
         Route::resource('clients', ClientController::class)->except(['index']);
 
