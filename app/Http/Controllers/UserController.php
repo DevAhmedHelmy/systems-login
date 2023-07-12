@@ -2,16 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Exception;
+use App\Models\{User, Client};
+use App\Enums\UserRoles;
+use App\Mail\NewUserMail;
 use Illuminate\View\View;
+use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\{DB, Hash, Mail};
+use Illuminate\Http\{Request,JsonResponse, RedirectResponse};
+
 
 class UserController extends Controller
 {
     public function index(): View
     {
         return view('users.index');
+    }
+
+    public function create(): View
+    {
+        $clients = Client::isActive()->get(['id', 'name']);
+        return view('users.create', compact('clients'));
+    }
+
+    public function store(UserRequest $request): RedirectResponse
+    {
+        DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+                'role' => UserRoles::USER_ROLE,
+            ]);
+
+            if (!empty($request->clients)) $user->clients()->sync($request->clients);
+            $this->sendCredentialsData($user->email, $request->password);
+        });
+
+        return redirect()->route('users.index')->with('success', 'User created successfully');
+    }
+
+
+    public function edit(User $user): View
+    {
+        $clients = Client::isActive()->get(['id', 'name']);
+        return view('users.edit', compact('user', 'clients'));
+    }
+
+    public function update(UserRequest $request, User $user): RedirectResponse
+    {
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+            'phone' => $request->phone,
+            'password' => $request->password ?  Hash::make($request->password) : $user->password,
+            'role' => UserRoles::USER_ROLE,
+        ]);
+        if ($request->clients) $user->clients()->sync($request->clients);
+        if ($request->password) $this->sendCredentialsData($user->email, $request->password);
+        return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
 
     public function show(User $user): View
@@ -75,5 +127,19 @@ class UserController extends Controller
             $rows[] = $nest;
         }
         return $rows;
+    }
+
+    private function sendCredentialsData($email, $password)
+    {
+        try {
+            $details = [
+                'title' => 'Credentials Data',
+                'mail' => $email,
+                'password' => $password
+            ];
+            Mail::to($email)->send(new NewUserMail($details));
+        } catch (Exception $e) {
+            info("Error: " . $e->getMessage());
+        }
     }
 }
