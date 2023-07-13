@@ -28,7 +28,7 @@ class UserTest extends TestCase
     public function test_admin_can_list_all_user()
     {
         $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me', 'role' => 'admin']);
-        $users = User::factory(10)->create();
+        User::factory(10)->create();
         $response = $this->actingAs($user)->get('/users/data');
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -38,6 +38,13 @@ class UserTest extends TestCase
             'data',
 
         ]);
+    }
+    public function test_user_can_search()
+    {
+        $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me', 'role' => 'admin']);
+        User::factory(10)->create();
+        $response = $this->actingAs($user)->get('/users/data?search%5Bvalue%5D=admin&search%5Bregex%5D=false');
+        $response->assertStatus(200);
     }
 
     public function test_admin_can_render_create_user_page()
@@ -95,7 +102,6 @@ class UserTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'test updated',
         ]);
-
     }
 
     public function test_admin_can_toggle_active_user()
@@ -108,6 +114,12 @@ class UserTest extends TestCase
             'id' => $user2->id,
             'is_active' => true
         ]);
+    }
+    public function test_admin_cannot_toggle_active_own_account()
+    {
+        $user = User::factory()->create(['is_active' => true, 'email' => 'admin@health-links.me', 'role' => 'admin']);
+        $response = $this->actingAs($user)->post('/users/' . $user->id . '/toggle_active');
+        $response->assertStatus(403);
     }
 
     /**
