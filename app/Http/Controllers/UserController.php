@@ -9,7 +9,7 @@ use App\Mail\NewUserMail;
 use Illuminate\View\View;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\{DB, Hash, Mail};
-use Illuminate\Http\{Request,JsonResponse, RedirectResponse};
+use Illuminate\Http\{Request, JsonResponse, RedirectResponse};
 
 
 class UserController extends Controller
@@ -53,21 +53,26 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user): RedirectResponse
     {
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'username' => $request->username,
-            'phone' => $request->phone,
-            'password' => $request->password ?  Hash::make($request->password) : $user->password,
-            'role' => UserRoles::USER_ROLE,
-        ]);
-        if ($request->clients) $user->clients()->sync($request->clients);
-        if ($request->password) $this->sendCredentialsData($user->email, $request->password);
+        DB::transaction(
+            function () use ($request, $user) {
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'username' => $request->username,
+                    'phone' => $request->phone,
+                    'password' => $request->password ?  Hash::make($request->password) : $user->password,
+                    'role' => UserRoles::USER_ROLE,
+                ]);
+                if ($request->clients) $user->clients()->sync($request->clients);
+                if ($request->password) $this->sendCredentialsData($user->email, $request->password);
+            }
+        );
         return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
 
     public function show(User $user): View
     {
+        $user->load('clients');
         return view('users.show', compact('user'));
     }
 
