@@ -44,4 +44,26 @@ class UserFactory extends Factory
             ];
         });
     }
+    /**
+     * Indicate that the user is suspended.
+     */
+    public function active(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_active' => true,
+            ];
+        });
+    }
+    /**
+     * Indicate that the user is suspended.
+     */
+    public function admin(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'admin',
+            ];
+        });
+    }
 }
