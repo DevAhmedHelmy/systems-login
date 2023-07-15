@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\Client;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Client;
+use App\Mail\NewUserMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserTest extends TestCase
@@ -41,7 +43,6 @@ class UserTest extends TestCase
             'recordsFiltered',
             'data',
         ]);
-
     }
     public function test_user_can_search()
     {
@@ -58,6 +59,7 @@ class UserTest extends TestCase
 
     public function test_admin_can_store_user()
     {
+        Mail::fake();
         $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me', 'role' => 'admin']);
         $clients = Client::factory(5)->create(['is_active' => true])->pluck('id')->toArray();
         $request = [
@@ -73,6 +75,7 @@ class UserTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'test',
         ]);
+        Mail::assertQueued(NewUserMail::class);
     }
 
     public function test_admin_can_render_edit_user_page()
@@ -85,7 +88,6 @@ class UserTest extends TestCase
     {
         $user2 = User::factory()->active()->create(['email' => 'test2@health-links.me', 'role' => 'user']);
         $clients = Client::factory(5)->active()->create()->pluck('id')->toArray();
-
         $request = [
             'name' => 'test updated',
             'email' => 'test2@health-links.me',

@@ -13,27 +13,22 @@ class ClientController extends Controller
 {
     public function index(): View
     {
-        if(auth()->user()->role=='admin'){
-
+        if (auth()->user()->role == 'admin')
             return view('clients.index');
-        }
+
         $clients = auth()->user()->clients;
         return view('clients.index', compact('clients'));
     }
 
     public function create(): View
     {
-        $users = User::isActive()->get();
+        $users = User::isActive()->get(['id', 'name']);
         return view('clients.create', compact('users'));
     }
 
     public function store(ClientRequest $request): RedirectResponse
     {
-        $client = Client::create([
-            'name' => $request->name,
-            'domain' => $request->domain,
-            'api_key' => $request->api_key,
-        ]);
+        $client = Client::create($request->except('users'));
         if (!empty($request->users)) $client->users()->sync($request->users);
         return redirect()->route('clients.index')->with('success', 'Client Created Successfully');
     }
@@ -47,17 +42,14 @@ class ClientController extends Controller
 
     public function edit(Client $client): View
     {
-        $users = User::with('clients')->isActive()->get();
+        $client->load('users');
+        $users = User::isActive()->get(['id', 'name']);
         return view('clients.edit', compact('client', 'users'));
     }
 
     public function update(ClientRequest $request, Client $client): RedirectResponse
     {
-        $client->update([
-            'name' => $request->name,
-            'domain' => $request->domain,
-            'api_key' => $request->api_key,
-        ]);
+        $client->update($request->except('users'));
         if (!empty($request->users)) $client->users()->sync($request->users);
         return redirect()->route('clients.index')->with('success', 'Client Updated Successfully');
     }
