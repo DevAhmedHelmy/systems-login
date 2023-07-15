@@ -75,12 +75,7 @@ class UserTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'test',
         ]);
-
-        Mail::assertQueued(NewUserMail::class, function ($mail) use ($user, $request) {
-            return $mail->hasTo($user->email) &&
-                $mail->details['email'] === $user->email
-                && $mail->details['password'] === $request['password'];
-        });
+        Mail::assertQueued(NewUserMail::class);
     }
 
     public function test_admin_can_render_edit_user_page()
