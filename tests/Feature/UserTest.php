@@ -76,7 +76,7 @@ class UserTest extends TestCase
             'name' => 'test',
         ]);
 
-        Mail::assertSent(NewUserMail::class, function ($mail) use ($user, $request) {
+        Mail::assertQueued(NewUserMail::class, function ($mail) use ($user, $request) {
             return $mail->hasTo($user->email) &&
                 $mail->details['email'] === $user->email
                 && $mail->details['password'] === $request['password'];
