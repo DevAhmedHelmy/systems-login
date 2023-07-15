@@ -15,23 +15,22 @@ class ClientTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['is_active' => true, 'email' => 'admin@health-links.me', 'role' => 'admin']);
+        $this->admin = User::factory()->active()->admin()->create(['email' => 'admin@health-links.me']);
     }
 
     public function test_user_can_access_clients_page()
     {
-        $user = User::factory()->create(['is_active' => true, 'email' => 'user@health-links.me']);
+        $user = User::factory()->active()->create(['email' => 'user@health-links.me']);
         $response = $this->actingAs($user)->get('/clients');
         $response->assertStatus(200);
     }
 
     public function test_client_list_by_auth()
     {
-        $user = User::factory()->create(['is_active' => true, 'email' => 'user@health-links.me']);
-        $clients = Client::factory(5)->create(['is_active' => true])->pluck('id')->toArray();
-        $user->clients()->sync($clients);
+        $user = User::factory()->active()->hasClients(5)->create(['email' => 'user@health-links.me']);
         $response = $this->actingAs($user)->get('/clients/data');
         $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
         $response->assertJsonStructure([
             'draw',
             'recordsTotal',
@@ -41,12 +40,10 @@ class ClientTest extends TestCase
     }
     public function test_admin_can_access_create_client_page()
     {
-
         $response = $this->actingAs($this->admin)->get('/clients/create');
         $response->assertStatus(200);
         $response->assertSee('Add New Client');
     }
-
 
     /**
      * @dataProvider requestDate
@@ -81,16 +78,14 @@ class ClientTest extends TestCase
 
     public function test_client_store()
     {
-
         $users = User::factory(5)->create()->pluck('id')->toArray();
-        $response = $this->actingAs($this->admin)->post('/clients', [
+        $response = $this->actingAs($this->admin)->followingRedirects()->post('/clients', [
             'name' => 'test',
             'domain' => 'test@health-links.me',
             'api_key' => 'password',
             'users' => $users
         ]);
-        $response->assertStatus(302)
-            ->assertSessionHasNoErrors();
+        $response->assertStatus(200);
         $this->assertDatabaseHas('clients', [
             'name' => 'test',
         ]);
@@ -98,7 +93,6 @@ class ClientTest extends TestCase
 
     public function test_client_show()
     {
-
         $client = Client::factory()->create(['name' => 'test']);
         $response = $this->actingAs($this->admin)->get('/clients/' . $client->id);
         $response->assertStatus(200)
@@ -107,7 +101,6 @@ class ClientTest extends TestCase
 
     public function test_client_edit()
     {
-
         $client = Client::factory()->create();
         $response = $this->actingAs($this->admin)->get('/clients/' . $client->id . '/edit');
         $response->assertStatus(200)
@@ -116,15 +109,13 @@ class ClientTest extends TestCase
 
     public function test_client_update()
     {
-
         $client = Client::factory()->create(['name' => 'test']);
-        $response = $this->actingAs($this->admin)->put('/clients/' . $client->id, [
+        $response = $this->actingAs($this->admin)->followingRedirects()->put('/clients/' . $client->id, [
             'name' => 'test updated',
             'domain' => 'test@health-links.me',
             'api_key' => 'password',
         ]);
-        $response->assertStatus(302)
-            ->assertSessionHasNoErrors();
+        $response->assertStatus(200);
         $this->assertDatabaseHas('clients', [
             'name' => 'test updated',
         ]);

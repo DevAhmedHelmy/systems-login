@@ -21,4 +21,13 @@ class ClientFactory extends Factory
             'domain' => fake()->domainName(),
         ];
     }
+
+    public function active(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_active' => true,
+            ];
+        });
+    }
 }
