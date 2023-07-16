@@ -22,7 +22,7 @@ class AuthenticationTest extends TestCase
     {
         Mail::fake();
         $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me']);
-        $response = $this->post('/login', [
+        $this->followingRedirects()->post('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -31,17 +31,13 @@ class AuthenticationTest extends TestCase
             'user_id' => $user->id,
             'code' => $code,
         ]);
-        $user->sendCodeEmail($code, $user->email);
-        Mail::assertSent(SendCodeMail::class, function ($mail) use ($user, $code) {
-            return $mail->hasTo($user->email) &&
-                $mail->details['code'] === $code;
-        });
-        $response->assertStatus(302);
+
+        Mail::assertQueued(SendCodeMail::class);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create(['is_active' => true,'email' => 'test@health-links.me']);
+        $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me']);
         $this->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',

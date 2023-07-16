@@ -17,16 +17,26 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@health-links.me',
+        $user1 = User::create([
+            'name' => 'Ahmed Helmy',
+            'username' => 'ahelmy',
+            'email' => 'ahelmy@health-links.me',
+            'phone' => '0123456789',
+            'password' => Hash::make('S43M4*y4b@DE'),
+            'role' => 'admin',
+        ]);
+
+        $user2 = User::create([
+            'name' => 'adel wafa',
+            'username' => 'awafa',
+            'email' => 'awafa@health-links.me',
             'phone' => '0123456789',
             'password' => Hash::make('S43M4*y4b@DE'),
             'role' => 'admin',
         ]);
 
         $clients = Client::pluck('id');
-        $user->clients()->attach($clients);
+        $user1->clients()->attach($clients);
+        $user2->clients()->attach($clients);
     }
 }
