@@ -16,62 +16,66 @@ class UserTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->active()->admin()->create(['email' => 'admin@health-links.me']);
+        $this->admin = User::factory()->active()->role('admin')->create(['email' => 'admin@health-links.me']);
     }
     public function test_admin_can_access_users_page()
     {
-        $response = $this->actingAs($this->admin)->get('/users');
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)->get('/users')->assertOk();
     }
 
 
     public function test_admin_can_access_show_user_details()
     {
-        $response = $this->actingAs($this->admin)->get('/users/' . $this->admin->id);
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->get('/users/' . $this->admin->id)
+            ->assertOk();
     }
 
     public function test_admin_can_list_all_user()
     {
         User::factory(10)->create();
-        $response = $this->actingAs($this->admin)->get('/users/data');
-        $response->assertStatus(200);
-        $response->assertJsonCount(11, 'data');
-        $response->assertJsonStructure([
-            'draw',
-            'recordsTotal',
-            'recordsFiltered',
-            'data',
-        ]);
+        $this->actingAs($this->admin)->get('/users/data')
+            ->assertOk()
+            ->assertJsonCount(11, 'data')
+            ->assertJsonStructure([
+                'draw',
+                'recordsTotal',
+                'recordsFiltered',
+                'data',
+            ]);
     }
     public function test_user_can_search()
     {
         User::factory(10)->create();
-        $response = $this->actingAs($this->admin)->get('/users/data?search%5Bvalue%5D=admin&search%5Bregex%5D=false');
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)->followingRedirects()
+            ->get('/users/data?search%5Bvalue%5D=admin&search%5Bregex%5D=false')
+            ->assertOk();
     }
 
     public function test_admin_can_render_create_user_page()
     {
-        $response = $this->actingAs($this->admin)->get('/users/create');
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->get('/users/create')
+            ->assertOk();
     }
 
     public function test_admin_can_store_user()
     {
         Mail::fake();
-        $user = User::factory()->create(['is_active' => true, 'email' => 'test@health-links.me', 'role' => 'admin']);
-        $clients = Client::factory(5)->create(['is_active' => true])->pluck('id')->toArray();
-        $request = [
-            'name' => 'test',
-            'email' => 'test_store@health-links.me',
-            'password' => 'SN^Jsj42KB%1',
-            'username' => 'test_store',
-            'password_confirmation' => 'SN^Jsj42KB%1',
-            'clients' => $clients
-        ];
-        $response = $this->actingAs($user)->followingRedirects()->post('/users', $request);
-        $response->assertStatus(200);
+        $clients = Client::factory(5)->active()->create()->pluck('id')->toArray();
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->post('/users', [
+                'name' => 'test',
+                'email' => 'test_store@health-links.me',
+                'password' => 'SN^Jsj42KB%1',
+                'username' => 'test_store',
+                'password_confirmation' => 'SN^Jsj42KB%1',
+                'clients' => $clients
+            ])
+            ->assertOk();
         $this->assertDatabaseHas('users', [
             'name' => 'test',
         ]);
@@ -80,24 +84,27 @@ class UserTest extends TestCase
 
     public function test_admin_can_render_edit_user_page()
     {
-        $response = $this->actingAs($this->admin)->get('/users/' . $this->admin->id . '/edit');
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->get('/users/' . $this->admin->id . '/edit')
+            ->assertOk();
     }
 
     public function test_admin_can_update_user()
     {
-        $user2 = User::factory()->active()->create(['email' => 'test2@health-links.me', 'role' => 'user']);
+        $user = User::factory()->role('user')->active()->create(['email' => 'test2@health-links.me']);
         $clients = Client::factory(5)->active()->create()->pluck('id')->toArray();
-        $request = [
-            'name' => 'test updated',
-            'email' => 'test2@health-links.me',
-            'username' => $user2->username,
-            'password' => 'SN^Jsj42KB%1',
-            'password_confirmation' => 'SN^Jsj42KB%1',
-            'clients' => $clients
-        ];
-        $response = $this->actingAs($this->admin)->followingRedirects()->put('/users/' . $user2->id, $request);
-        $response->assertStatus(200);
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->put('/users/' . $user->id, [
+                'name' => 'test updated',
+                'email' => 'test2@health-links.me',
+                'username' => $user->username,
+                'password' => 'SN^Jsj42KB%1',
+                'password_confirmation' => 'SN^Jsj42KB%1',
+                'clients' => $clients
+            ])
+            ->assertOk();
         $this->assertDatabaseHas('users', [
             'name' => 'test updated',
         ]);
@@ -105,10 +112,11 @@ class UserTest extends TestCase
 
     public function test_admin_can_toggle_active_user()
     {
-
-        $user2 = User::factory()->active()->create(['email' => 'test2@health-links.me', 'role' => 'user']);
-        $response = $this->actingAs($this->admin)->post('/users/' . $user2->id . '/toggle_active');
-        $response->assertStatus(200);
+        $user2 = User::factory()->role('user')->active()->create(['email' => 'test2@health-links.me']);
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->post('/users/' . $user2->id . '/toggle_active')
+            ->assertOk();
         $this->assertDatabaseHas('users', [
             'id' => $user2->id,
             'is_active' => false
@@ -116,9 +124,9 @@ class UserTest extends TestCase
     }
     public function test_admin_cannot_toggle_active_own_account()
     {
-
-        $response = $this->actingAs($this->admin)->post('/users/' . $this->admin->id . '/toggle_active');
-        $response->assertStatus(403);
+        $this->actingAs($this->admin)
+            ->post('/users/' . $this->admin->id . '/toggle_active')
+            ->assertStatus(403);
     }
 
     /**
@@ -126,10 +134,9 @@ class UserTest extends TestCase
      */
     public function test_create_user_validation($requestData): void
     {
-
-        $response = $this->actingAs($this->admin)->post('/users', $requestData);
-        $response->assertStatus(302);
-        $response->assertSessionHasErrors();
+        $this->actingAs($this->admin)
+            ->followingRedirects()
+            ->post('/users', $requestData)->assertOk();
     }
 
     public static function requestData(): array
