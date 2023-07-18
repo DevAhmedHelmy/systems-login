@@ -55,14 +55,13 @@ class UserFactory extends Factory
             ];
         });
     }
-    /**
-     * Indicate that the user is suspended.
-     */
-    public function admin(): Factory
+
+
+    public function role($role): Factory
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes) use ($role) {
             return [
-                'role' => 'admin',
+                'role' => $role,
             ];
         });
     }
